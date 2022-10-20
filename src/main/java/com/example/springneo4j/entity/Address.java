@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.Set;
 import java.util.HashSet;
 
-@Node
+@Node("Address")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @NoArgsConstructor
 @Getter
@@ -30,6 +31,7 @@ public class Address {
     private String country;
     private int pinCode;
 
+    @Property("residents")
     @Relationship("RESIDENTS")
     private Set<Person> residents;
 
