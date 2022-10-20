@@ -8,7 +8,9 @@ import com.example.springneo4j.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -28,24 +30,33 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public Address addResident(String addressId, String personId) {
+    public Address addResident(Long addressId, Long personId) {
         Address addressEntity = null;
         Person personEntity;
 
-        Optional<Address> addressEntityOptional = addressRepository.findById(Long.parseLong(addressId));
-        Optional<Person> personEntityOptional = personRepository.findById(Long.parseLong(personId));
+        Optional<Address> addressEntityOptional = addressRepository.findById(addressId);
+        Optional<Person> personEntityOptional = personRepository.findById(personId);
 
         if (personEntityOptional.isPresent() && addressEntityOptional.isPresent()) {
             addressEntity = addressEntityOptional.get();
             personEntity = personEntityOptional.get();
 
-            addressEntity.addResident(personEntity);
+            //addressEntity.addResident(personEntity);
             personEntity.livesAt(addressEntity);
 
-            addressRepository.save(addressEntity);
+            //addressRepository.save(addressEntity);
             personRepository.save(personEntity);
         }
 
         return addressEntity;
+    }
+
+    @Override
+    public Set<Person> findResidents(Long addressId) {
+        Set<Person> residents = new HashSet<>();
+        Optional<Address> addressEntityOptional = addressRepository.findById(addressId);
+        addressEntityOptional.ifPresent(address -> residents.addAll(address.getResidents()));
+
+        return residents;
     }
 }

@@ -1,19 +1,19 @@
 package com.example.springneo4j.entity;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Node
+@Node("Person")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @NoArgsConstructor
 @Getter
@@ -25,9 +25,11 @@ public class Person {
 
     private String name;
 
+    @Property("address")
     @Relationship(type = "LIVES_AT")
     private Address address;
 
+    @Property("friends")
     @Relationship(type = "FRIEND_WITH")
     private Set<Person> friends;
 
@@ -50,12 +52,18 @@ public class Person {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Person{" +
-                "name='" + name + '\'' +
-                ", address=" + address.getCountry() +
-                ", friends=");
+                "name='" + name + '\'');
+        if (address != null) {
+            sb.append(", address=" + address.getCountry() );
+        }
 
-        friends.stream().forEach(friend -> {sb.append(friend.getName()).append(",");});
-        sb.deleteCharAt(sb.lastIndexOf(",")).append('}');
+        if (friends != null && !friends.isEmpty()) {
+            sb.append(", friends=");
+            friends.forEach(friend -> sb.append(friend.getName()).append(","));
+            sb.deleteCharAt(sb.lastIndexOf(","));
+        }
+
+        sb.append('}');
 
         return sb.toString();
     }

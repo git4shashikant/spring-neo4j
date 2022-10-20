@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -41,6 +43,15 @@ public class WebController {
         return personService.savePerson(person);
     }
 
+    @PostMapping(
+            value = "/person/save-using-driver",
+            produces = { "application/json" },
+            consumes = { "application/json" }
+    )
+    public Map<String,Object> savePersonUsingDriver(@RequestBody Person person) {
+        return personService.savePersonUsingDriver(person);
+    }
+
     @GetMapping("/person/{name}")
     public Set<Person> findPersonWithName(@PathVariable(value="name") String name) {
         return personService.findPersonsWithName(name);
@@ -53,6 +64,11 @@ public class WebController {
     )
     public Set<Person> saveFriend(@PathVariable(value="personId") String personId, @PathVariable(value="friendId") String friendId) {
         return personService.addFriend(Long.parseLong(personId), Long.parseLong(friendId));
+    }
+
+    @GetMapping("/person/get-friends/{personId}")
+    public Set<Person> findPersonFriends(@PathVariable(value="personId") String personId) {
+        return personService.findPersonFriends(Long.parseLong(personId));
     }
 
     @PostMapping(
@@ -70,7 +86,12 @@ public class WebController {
             consumes = { "application/json" }
     )
     public Address addResident(@PathVariable(value="addressId") String addressId, @PathVariable(value="personId") String personId) {
-        return addressService.addResident(addressId, personId);
+        return addressService.addResident(Long.parseLong(addressId), Long.parseLong(personId));
+    }
+
+    @GetMapping("/address/get-residents/{addressId}")
+    public Set<Person> findAddressResidents(@PathVariable(value="addressId") String addressId) {
+        return addressService.findResidents(Long.parseLong(addressId));
     }
 
 }
